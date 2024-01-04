@@ -1,6 +1,12 @@
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, ReactElement, useEffect, useState } from 'react'
+import { User } from '@phosphor-icons/react'
+import { json } from 'stream/consumers'
+import Image from 'next/image'
+import Link from 'next/link'
+import { connect, connected } from '@/util/vars'
+import { useRouter } from 'next/router'
 const navigation = [
     { name: 'plugins', href: '#', current: true },
     { name: 'Texture pack', href: '#', current: false },
@@ -12,14 +18,29 @@ function classNames(...classes: any[]) {
     return classes.filter(Boolean).join(' ')
 }
 
-
 export default function Header() {
-    const [isConnected, setIsConnected] = useState(false);
+    const router = useRouter()
+    const [dropDownProfil, setDropDownProfil] = useState([]) 
+
+    async function getLogin() {
+        if(localStorage.getItem("auth")){
+            connected.setConnected(true)
+        }
+    }
+    async function disconnect() {
+        localStorage.removeItem("auth");
+        connected.setConnected(false)
+        console.log(connect)
+    }
     useEffect(() => {
-        
-    }, [isConnected]);
+        getLogin()
+        if(connect){
+            setDropDownProfil(
+            )
+        }
+    }, [connect]);
     return (
-            <Disclosure as="nav" className="bg-gray-800">
+            <Disclosure as="nav" className="bg-red-900">
                 {({ open }) => (
                     <>
                         <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -38,9 +59,11 @@ export default function Header() {
                                 </div>
                                 <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
                                     <div className="flex flex-shrink-0 items-center">
-                                        <img
-                                            className="h-8 w-auto"
-                                            src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
+                                        <Image
+                                            className="h-10"
+                                            width={40}
+                                            height={50}
+                                            src="http://localhost:3001/public/aethteam_logo.png"
                                             alt="Your Company"
                                         />
                                     </div>
@@ -51,7 +74,7 @@ export default function Header() {
                                                     key={item.name}
                                                     href={item.href}
                                                     className={classNames(
-                                                        item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                                                        item.current ? 'bg-red-950 text-white' : 'text-red-300 hover:bg-red-700 hover:text-white',
                                                         'rounded-md px-3 py-2 text-sm font-medium'
                                                     )}
                                                     aria-current={item.current ? 'page' : undefined}
@@ -65,7 +88,7 @@ export default function Header() {
                                 <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                                     <button
                                         type="button"
-                                        className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                                        className="relative rounded-full bg-red-950 p-1 text-red-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-red-800"
                                     >
                                         <span className="absolute -inset-1.5" />
                                         <span className="sr-only">View notifications</span>
@@ -75,14 +98,11 @@ export default function Header() {
                                     {/* Profile dropdown */}
                                     <Menu as="div" className="relative ml-3">
                                         <div>
-                                            <Menu.Button className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+                                        
+                                            <Menu.Button className="relative flex rounded-full bg-red-950 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-red-950">
                                                 <span className="absolute -inset-1.5" />
                                                 <span className="sr-only">Open user menu</span>
-                                                <img
-                                                    className="h-8 w-8 rounded-full"
-                                                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                                                    alt=""
-                                                />
+                                                <User className="h-9 w-9 rounded-full  border-red-800 border-2" />
                                             </Menu.Button>
                                         </div>
                                         <Transition
@@ -94,7 +114,7 @@ export default function Header() {
                                             leaveFrom="transform opacity-100 scale-100"
                                             leaveTo="transform opacity-0 scale-95"
                                         >
-                                            {isConnected && (
+                                            {connected.isconnect() && (
                                                 <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                                 <Menu.Item>
                                                     {({ active }) => (
@@ -102,7 +122,7 @@ export default function Header() {
                                                             href="#"
                                                             className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
                                                         >
-                                                            Your Profile
+                                                            Profil
                                                         </a>
                                                     )}
                                                 </Menu.Item>
@@ -112,7 +132,7 @@ export default function Header() {
                                                             href="#"
                                                             className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
                                                         >
-                                                            Settings
+                                                            Paramètres
                                                         </a>
                                                     )}
                                                 </Menu.Item>
@@ -121,8 +141,9 @@ export default function Header() {
                                                         <a
                                                             href="#"
                                                             className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                                                            onClick={disconnect}
                                                         >
-                                                            Sign out
+                                                            Se déconnecter
                                                         </a>
                                                     )}
                                                 </Menu.Item>
@@ -131,22 +152,22 @@ export default function Header() {
                                                 <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                                 <Menu.Item>
                                                     {({ active }) => (
-                                                        <a
-                                                            href="#"
-                                                            className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                                                        <Link
+                                                            href="/auth/login"
+                                                            className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-red-700')}
                                                         >
                                                             Se connecter
-                                                        </a>
+                                                        </Link>
                                                     )}
                                                 </Menu.Item>
                                                 <Menu.Item>
                                                     {({ active }) => (
-                                                        <a
-                                                            href="#"
-                                                            className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                                                        <Link
+                                                            href="/auth/register"
+                                                            className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-red-700')}
                                                         >
-                                                            S'enregistrer
-                                                        </a>
+                                                           { `S'enregistrer`}
+                                                        </Link>
                                                     )}
                                                 </Menu.Item>
                                             </Menu.Items>
